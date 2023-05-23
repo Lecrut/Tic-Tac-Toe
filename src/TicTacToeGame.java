@@ -1,0 +1,165 @@
+import java.awt.*;
+import java.awt.event.*;
+import java.util.*;
+import javax.swing.*;
+
+public class TicTacToeGame implements ActionListener {
+    static Font FONT = new Font("Arial Black", Font.BOLD, 75);
+    static Color C_BLUE = new Color(65, 105, 225) ;
+    static Color C_BLACK = new Color(0, 0, 0)  ;
+    static Color C_GREY = new Color(150, 150, 150) ;
+    static Color C_RED = new Color(255, 0, 0) ;
+    static Color C_GREEN = new Color(0, 255, 0) ;
+    JFrame frame = new JFrame();
+    JPanel t_panel = new JPanel();
+    JPanel bt_panel = new JPanel();
+    JLabel textfield = new JLabel();
+    JButton[] bton = new JButton[9];
+    int chance_flag = 0;
+    Random random = new Random();
+    boolean pl1_chance;
+
+
+    TicTacToeGame() {
+
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(800, 800);
+        frame.getContentPane().setBackground(new Color(50, 50, 50));
+        frame.setTitle("Tic Tac Toe");
+        frame.setLayout(new BorderLayout());
+        frame.setVisible(true);
+
+
+        textfield.setBackground(C_BLUE);
+        textfield.setForeground(C_BLACK);
+        textfield.setFont(FONT);
+        textfield.setHorizontalAlignment(JLabel.CENTER);
+        textfield.setText("Tic Tac Toe");
+        textfield.setOpaque(true);
+
+        t_panel.setLayout(new BorderLayout());
+        t_panel.setBounds(0, 0, 800, 100);
+
+        bt_panel.setLayout(new GridLayout(3, 3));
+        bt_panel.setBackground(C_GREY);
+
+        for (int i = 0; i < 9; i++) {
+            bton[i] = new JButton();
+            bt_panel.add(bton[i]);
+            bton[i].setFont(FONT);
+            bton[i].setFocusable(false);
+            bton[i].addActionListener(this);
+        }
+
+        t_panel.add(textfield);
+        frame.add(t_panel, BorderLayout.NORTH);
+        frame.add(bt_panel);
+
+        startGame();
+    }
+
+    public void startGame() {
+
+        try {
+            textfield.setText("Loading....");
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        int chance=random.nextInt(100);
+
+        if (chance%2 == 0) {
+            pl1_chance = true;
+            textfield.setText("X turn");
+        } else {
+            pl1_chance = false;
+            textfield.setText("O turn");
+        }
+    }
+
+    public void gameOver(String s){
+        chance_flag = 0;
+        Object[] option = {"Restart","Exit"};
+        int n = JOptionPane.showOptionDialog(frame, "Game Over\n"+s,"Game Over",JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.QUESTION_MESSAGE,null,option,option[0]);
+        frame.dispose();
+        if ( n==0 ){
+            new TicTacToeGame();
+        }
+
+    }
+
+    public void matchCheck(String s) {
+        if ((Objects.equals(bton[0].getText(), s)) && (Objects.equals(bton[1].getText(), s)) && (Objects.equals(bton[2].getText(), s))) {
+            winInfo(0, 1, 2, s);
+        }
+        else if ((Objects.equals(bton[0].getText(), s)) && (Objects.equals(bton[4].getText(), s)) && (Objects.equals(bton[8].getText(), s))) {
+            winInfo(0, 4, 8, s);
+        }
+        else if ((Objects.equals(bton[0].getText(), s)) && (Objects.equals(bton[3].getText(), s)) && (Objects.equals(bton[6].getText(), s))) {
+            winInfo(0, 3, 6, s);
+        }
+        else if ((Objects.equals(bton[1].getText(), s)) && (Objects.equals(bton[4].getText(), s)) && (Objects.equals(bton[7].getText(), s))) {
+            winInfo(1, 4, 7, s);
+        }
+        else if ((Objects.equals(bton[2].getText(), s)) && (Objects.equals(bton[4].getText(), s)) && (Objects.equals(bton[6].getText(), s))) {
+            winInfo(2, 4, 6, s);
+        }
+        else if ((Objects.equals(bton[2].getText(), s)) && (Objects.equals(bton[5].getText(), s)) && (Objects.equals(bton[8].getText(), s))) {
+            winInfo(2, 5, 8, s);
+        }
+        else if ((Objects.equals(bton[3].getText(), s)) && (Objects.equals(bton[4].getText(), s)) && (Objects.equals(bton[5].getText(), s))) {
+            winInfo(3, 4, 5, s);
+        }
+        else if ((Objects.equals(bton[6].getText(), s)) && (Objects.equals(bton[7].getText(), s)) && (Objects.equals(bton[8].getText(), s))) {
+            winInfo(6, 7, 8, s);
+        }
+        else if(chance_flag==9) {
+            textfield.setText("Match Tie");
+            gameOver("Match Tie");
+        }
+    }
+
+    public void winInfo(int x1, int x2, int x3, String s) {
+        bton[x1].setBackground(Color.RED);
+        bton[x2].setBackground(Color.RED);
+        bton[x3].setBackground(Color.RED);
+
+        for (int i = 0; i < 9; i++) {
+            bton[i].setEnabled(false);
+        }
+        textfield.setText(s+" wins");
+        gameOver(s+" wins");
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+
+        for (int i = 0; i < 9; i++) {
+            if (e.getSource() == bton[i]) {
+                if (pl1_chance) {
+                    if (Objects.equals(bton[i].getText(), "")) {
+                        bton[i].setForeground(C_RED);
+                        bton[i].setText("X");
+                        pl1_chance = false;
+                        textfield.setText("O turn");
+                        chance_flag++;
+                        matchCheck("X" );
+                        matchCheck("O" );
+                    }
+                }
+                else {
+                    if (Objects.equals(bton[i].getText(), "")) {
+                        bton[i].setForeground(C_GREEN);
+                        bton[i].setText("O");
+                        pl1_chance = true;
+                        textfield.setText("X turn");
+                        chance_flag++;
+                        matchCheck("X" );
+                        matchCheck("O" );
+                    }
+                }
+            }
+        }
+    }
+
+}
