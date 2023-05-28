@@ -1,5 +1,9 @@
 import java.awt.*;
 import java.awt.event.*;
+import java.io.BufferedReader;
+import java.io.PrintWriter;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.*;
 import javax.swing.*;
 import java.util.Timer;
@@ -25,6 +29,11 @@ public class TicTacToeGame extends JPanel implements ActionListener {
 
     TicTacToeGame() {
 
+        createMap();
+        startGame();
+    }
+
+    public void createMap() {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(800, 900);
         frame.getContentPane().setBackground(new Color(50, 50, 50));
@@ -59,10 +68,7 @@ public class TicTacToeGame extends JPanel implements ActionListener {
         t_panel.add(textfield);
         frame.add(t_panel, BorderLayout.NORTH);
         frame.add(bt_panel);
-
-        startGame();
     }
-
     public void startGame() {
 
         try {
