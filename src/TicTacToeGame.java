@@ -2,14 +2,18 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
 import javax.swing.*;
+import java.util.Timer;
 
-public class TicTacToeGame implements ActionListener {
-    static Font FONT = new Font("Arial Black", Font.BOLD, 75);
-    static Color C_BLUE = new Color(65, 105, 225) ;
+public class TicTacToeGame extends JPanel implements ActionListener {
+    static Font FONT = new Font("Arial Black", Font.BOLD, 75) ;
+    static Color C_BLUE = new Color(0, 0, 255) ;
     static Color C_BLACK = new Color(0, 0, 0)  ;
     static Color C_GREY = new Color(150, 150, 150) ;
     static Color C_RED = new Color(255, 0, 0) ;
     static Color C_GREEN = new Color(0, 255, 0) ;
+    Timer timer;
+    int timerGraczX = 0;
+    int timerGraczO = 0;
     JFrame frame = new JFrame();
     JPanel t_panel = new JPanel();
     JPanel bt_panel = new JPanel();
@@ -19,16 +23,14 @@ public class TicTacToeGame implements ActionListener {
     Random random = new Random();
     boolean pl1_chance;
 
-
     TicTacToeGame() {
 
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(800, 800);
+        frame.setSize(800, 900);
         frame.getContentPane().setBackground(new Color(50, 50, 50));
         frame.setTitle("Tic Tac Toe");
         frame.setLayout(new BorderLayout());
         frame.setVisible(true);
-
 
         textfield.setBackground(C_BLUE);
         textfield.setForeground(C_BLACK);
@@ -36,6 +38,9 @@ public class TicTacToeGame implements ActionListener {
         textfield.setHorizontalAlignment(JLabel.CENTER);
         textfield.setText("Tic Tac Toe");
         textfield.setOpaque(true);
+
+        timer = new Timer();
+        timer.scheduleAtFixedRate(new Task(), 0, 1000);
 
         t_panel.setLayout(new BorderLayout());
         t_panel.setBounds(0, 0, 800, 100);
@@ -63,17 +68,19 @@ public class TicTacToeGame implements ActionListener {
         try {
             textfield.setText("Loading....");
             Thread.sleep(1000);
-        } catch (InterruptedException e) {
+        }
+        catch (InterruptedException e) {
             e.printStackTrace();
         }
         int chance=random.nextInt(100);
 
         if (chance%2 == 0) {
             pl1_chance = true;
-            textfield.setText("X turn");
-        } else {
+            textfield.setText("X turn \n"+ toMinutes(timerGraczX));
+        }
+        else {
             pl1_chance = false;
-            textfield.setText("O turn");
+            textfield.setText("O turn\n"+toMinutes(timerGraczO));
         }
     }
 
@@ -141,7 +148,6 @@ public class TicTacToeGame implements ActionListener {
                         bton[i].setForeground(C_RED);
                         bton[i].setText("X");
                         pl1_chance = false;
-                        textfield.setText("O turn");
                         chance_flag++;
                         matchCheck("X" );
                         matchCheck("O" );
@@ -152,7 +158,6 @@ public class TicTacToeGame implements ActionListener {
                         bton[i].setForeground(C_GREEN);
                         bton[i].setText("O");
                         pl1_chance = true;
-                        textfield.setText("X turn");
                         chance_flag++;
                         matchCheck("X" );
                         matchCheck("O" );
@@ -162,4 +167,29 @@ public class TicTacToeGame implements ActionListener {
         }
     }
 
+    private class Task extends TimerTask {
+        @Override
+        public void run() {
+            if ( chance_flag != 0 && chance_flag != 9) {
+                if (!pl1_chance) {
+                    timerGraczO++;
+                    textfield.setText("O turn \n"+ toMinutes(timerGraczO));
+                }
+                else {
+                    timerGraczX++;
+                    textfield.setText("X turn \n"+ toMinutes(timerGraczX));
+                }
+                textfield.repaint();
+            }
+        }
+    }
+    String toMinutes(int timer) {
+        int minuty = timer / 60;
+        int sekundy = timer - minuty * 60;
+        if (sekundy < 10) {
+            return minuty + ":0" + sekundy;
+        } else {
+            return minuty + ":" + sekundy;
+        }
+    }
 }
