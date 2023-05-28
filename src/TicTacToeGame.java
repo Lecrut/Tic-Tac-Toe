@@ -1,12 +1,15 @@
 import java.awt.*;
 import java.awt.event.*;
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.PrintWriter;
-import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.*;
 import javax.swing.*;
 import java.util.Timer;
+
+import static java.lang.System.exit;
 
 public class TicTacToeGame extends JPanel implements ActionListener {
     static Font FONT = new Font("Arial Black", Font.BOLD, 75) ;
@@ -27,10 +30,27 @@ public class TicTacToeGame extends JPanel implements ActionListener {
     Random random = new Random();
     boolean pl1_chance;
 
+    Socket socket = null;
+    PrintWriter out = null;
+    BufferedReader in = null;
     TicTacToeGame() {
-
+        hostConnection();
         createMap();
         startGame();
+    }
+
+    public void hostConnection() {
+        System.out.println("Łączenie z hostem");
+        try {
+            socket = new Socket("10.7.110.190", 2137);
+        } catch (UnknownHostException e) {
+            System.out.println("Nie znaleziono hosta");
+            exit(1);
+        } catch (IOException e) {
+            System.out.println("Nie udało się połączyć z hostem");
+            exit(2);
+        }
+        System.out.println("Połączono z hostem");
     }
 
     public void createMap() {
@@ -69,6 +89,7 @@ public class TicTacToeGame extends JPanel implements ActionListener {
         frame.add(t_panel, BorderLayout.NORTH);
         frame.add(bt_panel);
     }
+
     public void startGame() {
 
         try {
