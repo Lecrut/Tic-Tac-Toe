@@ -1,12 +1,15 @@
 import java.awt.*;
 import java.awt.event.*;
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.*;
 import javax.swing.*;
 import java.util.Timer;
+
+import static java.lang.System.exit;
 
 public class TicTacToeGame extends JPanel implements ActionListener {
     static Font FONT = new Font("Arial Black", Font.BOLD, 75) ;
@@ -27,12 +30,37 @@ public class TicTacToeGame extends JPanel implements ActionListener {
     Random random = new Random();
     boolean pl1_chance;
 
+    ServerSocket serverSocket = null;
+    Socket clientSocket = null;
+    PrintWriter out = null;
+    BufferedReader in = null;
     TicTacToeGame() {
-
+        createConnection();
         createMap();
         startGame();
     }
 
+    public void createConnection() {
+        System.out.println("Tworzenie hosta");
+        try {
+            serverSocket = new ServerSocket(2137);
+        } catch (IOException e) {
+            System.out.println("Nie udało się utworzyć serwera");
+            System.out.println("Koniec programu");
+            exit(1);
+        }
+        System.out.println("Utworzono hosta");
+
+        System.out.println("Łączenie z klientem");
+        try {
+            clientSocket = serverSocket.accept();
+        } catch (IOException e) {
+            System.out.println("Nie udało się połączyć z serwerem");
+            System.out.println("Koniec programu");
+            exit(2);
+        }
+        System.out.println("Połączono z klientem");
+    }
     public void createMap() {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(800, 900);
