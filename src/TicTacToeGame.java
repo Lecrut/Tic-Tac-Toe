@@ -2,6 +2,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -35,6 +36,14 @@ public class TicTacToeGame extends JPanel implements ActionListener {
     BufferedReader in = null;
     TicTacToeGame() {
         hostConnection();
+        try {
+            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            out = new PrintWriter(socket.getOutputStream(), true);
+        } catch (IOException e) {
+            System.out.println("Nie udało się wysłać danych");
+            System.out.println("Koniec programu");
+            exit(3);
+        }
         createMap();
         startGame();
     }
@@ -42,7 +51,7 @@ public class TicTacToeGame extends JPanel implements ActionListener {
     public void hostConnection() {
         System.out.println("Łączenie z hostem");
         try {
-            socket = new Socket("10.7.110.190", 2137);
+            socket = new Socket("localhost", 2137);
         } catch (UnknownHostException e) {
             System.out.println("Nie znaleziono hosta");
             exit(1);
@@ -70,6 +79,7 @@ public class TicTacToeGame extends JPanel implements ActionListener {
 
         timer = new Timer();
         timer.scheduleAtFixedRate(new Task(), 0, 1000);
+        timer.scheduleAtFixedRate(new readString(), 0, 100);
 
         t_panel.setLayout(new BorderLayout());
         t_panel.setBounds(0, 0, 800, 100);
@@ -81,6 +91,7 @@ public class TicTacToeGame extends JPanel implements ActionListener {
             bton[i] = new JButton();
             bt_panel.add(bton[i]);
             bton[i].setFont(FONT);
+            bton[i].setText(" ");
             bton[i].setFocusable(false);
             bton[i].addActionListener(this);
         }
@@ -170,27 +181,52 @@ public class TicTacToeGame extends JPanel implements ActionListener {
 
         for (int i = 0; i < 9; i++) {
             if (e.getSource() == bton[i]) {
-                if (pl1_chance) {
-                    if (Objects.equals(bton[i].getText(), "")) {
-                        bton[i].setForeground(C_RED);
-                        bton[i].setText("X");
-                        pl1_chance = false;
-                        chance_flag++;
-                        matchCheck("X" );
-                        matchCheck("O" );
-                    }
+                if (pl1_chance && Objects.equals(bton[i].getText(), " ")) {
+                    bton[i].setForeground(C_RED);
+                    bton[i].setText("X");
+                    pl1_chance = true;
+                    chance_flag++;
+                    matchCheck("X" );
+                    matchCheck("O" );
                 }
-                else {
-                    if (Objects.equals(bton[i].getText(), "")) {
-                        bton[i].setForeground(C_GREEN);
-                        bton[i].setText("O");
-                        pl1_chance = true;
-                        chance_flag++;
-                        matchCheck("X" );
-                        matchCheck("O" );
-                    }
-                }
+                sendString();
             }
+        }
+    }
+
+    private void sendString() {
+        out.println("Start");
+        String s = "";
+        for ( int i = 0 ; i < 9 ; i++) {
+            s += bton[i].getText();
+        }
+        out.println(s);
+    }
+
+
+    private class readString extends TimerTask {
+        @Override
+        public void run() {
+            try {
+                if(!in.ready()) {
+                    repaint();
+                    return;
+                }
+
+                String wejscie = in.readLine();
+                if (wejscie.equals("Start")) {
+                    String s = in.readLine();
+                    for (int i = 0 ; i < 9 ; i++) {
+                        bton[i].setText(String.valueOf(s.charAt(i)));
+                    }
+                    pl1_chance = false;
+                }
+            } catch (IOException e) {
+                System.out.println("Nie udało się odczytać danych");
+                System.out.println("Koniec programu");
+                exit(4);
+            }
+            repaint();
         }
     }
 
