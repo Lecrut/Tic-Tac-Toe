@@ -110,16 +110,9 @@ public class TicTacToeGame extends JPanel implements ActionListener {
         catch (InterruptedException e) {
             e.printStackTrace();
         }
-        int chance=random.nextInt(100);
 
-        if (chance%2 == 0) {
-            pl1_chance = true;
-            textfield.setText("X turn \n"+ toMinutes(timerGraczX));
-        }
-        else {
-            pl1_chance = false;
-            textfield.setText("O turn\n"+toMinutes(timerGraczO));
-        }
+        pl1_chance = true;
+        textfield.setText("O turn");
     }
 
     public void gameOver(String s){
@@ -165,6 +158,7 @@ public class TicTacToeGame extends JPanel implements ActionListener {
     }
 
     public void winInfo(int x1, int x2, int x3, String s) {
+        sendString();
         bton[x1].setBackground(Color.RED);
         bton[x2].setBackground(Color.RED);
         bton[x3].setBackground(Color.RED);
@@ -181,17 +175,29 @@ public class TicTacToeGame extends JPanel implements ActionListener {
 
         for (int i = 0; i < 9; i++) {
             if (e.getSource() == bton[i]) {
-                if (pl1_chance && Objects.equals(bton[i].getText(), " ")) {
+                if (!pl1_chance && Objects.equals(bton[i].getText(), " ")) {
                     bton[i].setForeground(C_RED);
-                    bton[i].setText("X");
+                    bton[i].setText("O");
+                    sendString();
                     pl1_chance = true;
                     chance_flag++;
                     matchCheck("X" );
                     matchCheck("O" );
+                    if ( checkDraw() ) {
+                        textfield.setText("Match Tie");
+                        gameOver("Match Tie");
+                    }
                 }
-                sendString();
             }
         }
+    }
+    private boolean checkDraw() {
+        for ( int i = 0 ; i < 9 ; i++) {
+            if (!Objects.equals(bton[i].getText(), "X") && !Objects.equals(bton[i].getText(), "O")) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private void sendString() {
@@ -218,6 +224,12 @@ public class TicTacToeGame extends JPanel implements ActionListener {
                     String s = in.readLine();
                     for (int i = 0 ; i < 9 ; i++) {
                         bton[i].setText(String.valueOf(s.charAt(i)));
+                    }
+                    matchCheck("X" );
+                    matchCheck("O" );
+                    if ( checkDraw() ) {
+                        textfield.setText("Match Tie");
+                        gameOver("Match Tie");
                     }
                     pl1_chance = false;
                 }
