@@ -118,16 +118,8 @@ public class TicTacToeGame extends JPanel implements ActionListener {
         catch (InterruptedException e) {
             e.printStackTrace();
         }
-        int chance=random.nextInt(100);
-
-        if (chance%2 == 0) {
-            pl1_chance = true;
-            textfield.setText("X turn \n"+ toMinutes(timerGraczX));
-        }
-        else {
-            pl1_chance = false;
-            textfield.setText("O turn\n"+toMinutes(timerGraczO));
-        }
+        pl1_chance = true;
+        textfield.setText("X turn \n"+ toMinutes(timerGraczX));
     }
 
     public void gameOver(String s){
@@ -192,15 +184,28 @@ public class TicTacToeGame extends JPanel implements ActionListener {
                 if (pl1_chance && Objects.equals(bton[i].getText(), " ")) {
                     bton[i].setForeground(C_RED);
                     bton[i].setText("X");
+                    sendString();
                     pl1_chance = false;
                     chance_flag++;
                     matchCheck("X" );
                     matchCheck("O" );
+                    if ( checkDraw() ) {
+                        textfield.setText("Match Tie");
+                        gameOver("Match Tie");
+                    }
                 }
-                sendString();
             }
         }
 
+    }
+
+    private boolean checkDraw() {
+        for ( int i = 0 ; i < 9 ; i++) {
+            if (!Objects.equals(bton[i].getText(), "X") && !Objects.equals(bton[i].getText(), "O")) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private void sendString() {
@@ -229,6 +234,12 @@ public class TicTacToeGame extends JPanel implements ActionListener {
                         bton[i].setText(String.valueOf(s.charAt(i)));
                     }
                     pl1_chance = true;
+                    matchCheck("X" );
+                    matchCheck("O" );
+                    if ( checkDraw() ) {
+                        textfield.setText("Match Tie");
+                        gameOver("Match Tie");
+                    }
                 }
             } catch (IOException e) {
                 System.out.println("Nie udało się odczytać danych");
