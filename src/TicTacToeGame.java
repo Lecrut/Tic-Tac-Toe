@@ -8,6 +8,7 @@ import java.net.Socket;
 import java.util.*;
 import javax.swing.*;
 import java.util.Timer;
+import java.io.*;
 
 import static java.lang.System.exit;
 
@@ -37,6 +38,14 @@ public class TicTacToeGame extends JPanel implements ActionListener {
     TicTacToeGame() {
         createConnection();
         createMap();
+        try {
+            in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+            out = new PrintWriter(clientSocket.getOutputStream(), true);
+        } catch (IOException e) {
+            System.out.println("Nie udało się wysłać danych");
+            System.out.println("Koniec programu");
+            exit(3);
+        }
         out.println("Start Game");
         startGame();
     }
