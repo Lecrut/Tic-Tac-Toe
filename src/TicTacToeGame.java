@@ -37,7 +37,6 @@ public class TicTacToeGame extends JPanel implements ActionListener {
     BufferedReader in = null;
     TicTacToeGame() {
         createConnection();
-        createMap();
         try {
             in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
             out = new PrintWriter(clientSocket.getOutputStream(), true);
@@ -46,6 +45,7 @@ public class TicTacToeGame extends JPanel implements ActionListener {
             System.out.println("Koniec programu");
             exit(3);
         }
+        createMap();
         out.println("Start Game");
         startGame();
     }
