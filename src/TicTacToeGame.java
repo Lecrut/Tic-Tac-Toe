@@ -1,9 +1,5 @@
 import java.awt.*;
 import java.awt.event.*;
-import java.io.BufferedReader;
-import java.io.PrintWriter;
-import java.net.ServerSocket;
-import java.net.Socket;
 import java.util.*;
 import javax.swing.*;
 import java.util.Timer;
@@ -61,6 +57,7 @@ public class TicTacToeGame extends JPanel implements ActionListener {
             bton[i] = new JButton();
             bt_panel.add(bton[i]);
             bton[i].setFont(FONT);
+            bton[i].setText(" ");
             bton[i].setFocusable(false);
             bton[i].addActionListener(this);
         }
@@ -78,16 +75,8 @@ public class TicTacToeGame extends JPanel implements ActionListener {
         catch (InterruptedException e) {
             e.printStackTrace();
         }
-        int chance=random.nextInt(100);
-
-        if (chance%2 == 0) {
-            pl1_chance = true;
-            textfield.setText("X turn \n"+ toMinutes(timerGraczX));
-        }
-        else {
-            pl1_chance = false;
-            textfield.setText("O turn\n"+toMinutes(timerGraczO));
-        }
+        pl1_chance = true;
+        textfield.setText("X turn \n"+ toMinutes(timerGraczX));
     }
 
     public void gameOver(String s){
@@ -144,29 +133,34 @@ public class TicTacToeGame extends JPanel implements ActionListener {
         gameOver(s+" wins");
     }
 
+    public void computerMove() {
+        for ( int i = 0 ; i < 9 ; i++) {
+            if ( bton[i].getText().equals(" ") ) {
+                bton[i].setForeground(C_GREEN);
+                bton[i].setText("O");
+                pl1_chance = true;
+                chance_flag++;
+                matchCheck("X" );
+                matchCheck("O" );
+                return;
+            }
+        }
+    }
+
     @Override
     public void actionPerformed(ActionEvent e) {
 
         for (int i = 0; i < 9; i++) {
             if (e.getSource() == bton[i]) {
                 if (pl1_chance) {
-                    if (Objects.equals(bton[i].getText(), "")) {
+                    if (Objects.equals(bton[i].getText(), " ")) {
                         bton[i].setForeground(C_RED);
                         bton[i].setText("X");
                         pl1_chance = false;
                         chance_flag++;
                         matchCheck("X" );
                         matchCheck("O" );
-                    }
-                }
-                else {
-                    if (Objects.equals(bton[i].getText(), "")) {
-                        bton[i].setForeground(C_GREEN);
-                        bton[i].setText("O");
-                        pl1_chance = true;
-                        chance_flag++;
-                        matchCheck("X" );
-                        matchCheck("O" );
+                        computerMove();
                     }
                 }
             }
