@@ -20,7 +20,6 @@ public class TicTacToeGame extends JPanel implements ActionListener {
     JLabel textfield = new JLabel();
     JButton[] bton = new JButton[9];
     int chance_flag = 0;
-    Random random = new Random();
     boolean pl1_chance;
 
     TicTacToeGame() {
@@ -133,18 +132,122 @@ public class TicTacToeGame extends JPanel implements ActionListener {
         gameOver(s+" wins");
     }
 
+    public int checkLine(int x1, int x2, int x3, String s) {
+        if ( bton[x1].getText().equals(s) && bton[x2].getText().equals(s) && bton[x3].getText().equals(" ") ) {
+            return x3;
+        }
+        if ( bton[x1].getText().equals(s) && bton[x2].getText().equals(" ") && bton[x3].getText().equals(s) ) {
+            return x2;
+        }
+        if ( bton[x1].getText().equals(" ") && bton[x2].getText().equals(s) && bton[x3].getText().equals(s) ) {
+            return x1;
+        }
+        return -1;
+    }
+    public void paintChar (int i, String s) {
+        bton[i].setForeground(C_GREEN);
+        bton[i].setText(s);
+        pl1_chance = true;
+        chance_flag++;
+        matchCheck("X" );
+        matchCheck("O" );
+    }
+
     public void computerMove() {
-        for ( int i = 0 ; i < 9 ; i++) {
-            if ( bton[i].getText().equals(" ") ) {
-                bton[i].setForeground(C_GREEN);
-                bton[i].setText("O");
-                pl1_chance = true;
-                chance_flag++;
-                matchCheck("X" );
-                matchCheck("O" );
+        int check = checkLine(0 , 1, 2, "O");
+        if ( check != -1 ) {
+            paintChar(check,"O");
+            return;
+        }
+        check = checkLine(3 , 4, 5, "O");
+        if ( check != -1 ) {
+            paintChar(check,"O");
+            return;
+        }
+        check = checkLine(6 , 7, 8, "O");
+        if ( check != -1 ) {
+            paintChar(check,"O");
+            return;
+        }
+        check = checkLine(0 , 4, 8, "O");
+        if ( check != -1 ) {
+            paintChar(check,"O");
+            return;
+        }
+        check = checkLine(1 , 4, 7, "O");
+        if ( check != -1 ) {
+            paintChar(check,"O");
+            return;
+        }
+        check = checkLine(2 , 5, 8, "O");
+        if ( check != -1 ) {
+            paintChar(check,"O");
+            return;
+        }
+        check = checkLine(0 , 3, 6, "O");
+        if ( check != -1 ) {
+            paintChar(check,"O");
+            return;
+        }
+        check = checkLine(6 , 4, 2, "O");
+        if ( check != -1 ) {
+            paintChar(check,"O");
+            return;
+        }
+        check = checkLine(0 , 1, 2, "X");
+        if ( check != -1 ) {
+            paintChar(check,"O");
+            return;
+        }
+        check = checkLine(3 , 4, 5, "X");
+        if ( check != -1 ) {
+            paintChar(check,"O");
+            return;
+        }
+        check = checkLine(6 , 7, 8, "X");
+        if ( check != -1 ) {
+            paintChar(check,"O");
+            return;
+        }
+        check = checkLine(0 , 4, 8, "X");
+        if ( check != -1 ) {
+            paintChar(check,"O");
+            return;
+        }
+        check = checkLine(6 , 4, 2, "X");
+        if ( check != -1 ) {
+            paintChar(check,"O");
+            return;
+        }
+        check = checkLine(0 , 3, 6, "X");
+        if ( check != -1 ) {
+            paintChar(check,"O");
+            return;
+        }
+        check = checkLine(1 , 4, 7, "X");
+        if ( check != -1 ) {
+            paintChar(check,"O");
+            return;
+        }
+        check = checkLine(2 , 5, 8, "X");
+        if ( check != -1 ) {
+            paintChar(check,"O");
+            return;
+        }
+        if ( bton[4].getText().equals(" ")) {
+            paintChar(4, "O");
+            return;
+        }
+        while (true) {
+            int place = getRandomNumber(0,8);
+            if ( bton[place].getText().equals(" ") ) {
+                paintChar(place, "O");
                 return;
             }
         }
+    }
+    public int getRandomNumber(int min, int max) {
+        return (int) ((Math.random() * (max - min)) + min);
     }
 
     @Override
